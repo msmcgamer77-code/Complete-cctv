@@ -93,4 +93,22 @@ public class CameraListener implements Listener {
             event.setCancelled(true);
             ItemStack clicked = event.getCurrentItem();
             if (clicked == null || clicked.getType() != Material.PLAYER_HEAD || !clicked.hasItemMeta()) return;
-            String camName = org.bukkit.ChatCol
+            String camName = org.bukkit.ChatColor.stripColor(clicked.getItemMeta().getDisplayName());
+            Camera camera = plugin.getCameraManager().getCamera(camName);
+            if (camera == null) {
+                event.getWhoClicked().sendMessage("§cThat camera no longer exists.");
+                return;
+            }
+            Player player = (Player) event.getWhoClicked();
+            player.closeInventory();
+            plugin.getWatchManager().startWatch(player, camera.getLocation());
+        }
+    }
+
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event) {
+        if (plugin.getWatchManager().isWatching(event.getPlayer())) {
+            plugin.getWatchManager().stopWatch(event.getPlayer());
+        }
+    }
+                }
